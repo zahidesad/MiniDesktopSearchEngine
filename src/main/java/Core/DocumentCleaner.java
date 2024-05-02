@@ -10,22 +10,24 @@ import javax.swing.JOptionPane;
  *
  * @author zahid
  */
-public class Document {
+public class DocumentCleaner {
 
-    private String name;
+    private File file;
+    private String fileName;
     private String content;
     private MyLinkedList contentWordsList;
 
-    public Document(File filePath, MyLinkedList ignoredWords) {
-        setDocumentFields(filePath, ignoredWords);
+    public DocumentCleaner(File file, MyLinkedList ignoredWords) {
+        this.file = file;
+        setDocumentFields(ignoredWords);
     }
 
-    protected void setDocumentFields(File filePath, MyLinkedList ignoredWords) {
-        if (filePath != null && ignoredWords != null) {
-            content = readHTMLFileWithoutTags(filePath);
-            content = cleanUpIgnoredWords(getContent(), ignoredWords);
-            content = cleanUpSpaces(getContent());
-            name = filePath.getName();
+    protected void setDocumentFields(MyLinkedList ignoredWords) {
+        if (file != null && ignoredWords != null) {
+            content = readHTMLFileWithoutTags();
+            content = cleanUpIgnoredWords(ignoredWords);
+            content = cleanUpSpaces();
+            fileName = file.getName();
 
             contentWordsList = new MyLinkedList();
             StringBuilder word = new StringBuilder();
@@ -38,16 +40,16 @@ public class Document {
                     word.append(c);
                 }
             }
-            getContentWordsList().addLast(word.toString()); // Add last word of content
+            contentWordsList.addLast(word.toString()); // Add last word of content
         } else {
             JOptionPane.showMessageDialog(null, "Please select the file containing ignored words first.",
                     "Ignored Words Weren't Select", JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    protected String readHTMLFileWithoutTags(File filePath) {
+    protected String readHTMLFileWithoutTags() {
         StringBuilder contentBuilder = new StringBuilder();
-        try ( BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try ( BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             boolean insideTag = false;
             while ((line = br.readLine()) != null) {
@@ -55,9 +57,7 @@ public class Document {
                     insideTag = true;
                 }
                 if (!insideTag) {
-                    // Noktalama işaretleri ve boşlukları temizle
                     line = line.replaceAll("[\\p{Punct}\\s]+", " ").trim();
-                    // Kelimeleri ekle
                     String[] words = line.split(" ");
                     for (String word : words) {
                         contentBuilder.append(word).append(" ");
@@ -73,7 +73,7 @@ public class Document {
         return contentBuilder.toString();
     }
 
-    protected String cleanUpIgnoredWords(String content, MyLinkedList ignoredWords) {
+    protected String cleanUpIgnoredWords(MyLinkedList ignoredWords) {
         MyLinkedListNode<String> current = ignoredWords.head;
         while (current != null) {
             String wordToRemove = current.data;
@@ -83,16 +83,16 @@ public class Document {
         return content;
     }
 
-    protected String cleanUpSpaces(String content) {
+    protected String cleanUpSpaces() {
         return content.replaceAll("\\s+", " ").trim();
     }
 
     public String getName() {
-        return name;
+        return fileName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.fileName = name;
     }
 
     public String getContent() {

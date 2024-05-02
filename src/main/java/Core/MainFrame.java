@@ -14,7 +14,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    Document document;
+    MyLinkedList< File> files;
     MyLinkedList<String> ignoredWords;
     JFileChooser fileChooser;
 
@@ -174,10 +174,10 @@ public class MainFrame extends javax.swing.JFrame {
 
 
     private void selectFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileButtonActionPerformed
-        File filePath = filePicker();
-        document = new Document(filePath, ignoredWords);
-        System.out.println(document.getName());;
-        System.out.println(document.getContent());
+        File file = filePicker();
+        DocumentCleaner documentCleaner = new DocumentCleaner(file, ignoredWords);
+        System.out.println(documentCleaner.getName());;
+        documentCleaner.getContentWordsList().display();
     }//GEN-LAST:event_selectFileButtonActionPerformed
 
     private void selectIgnoredButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectIgnoredButtonActionPerformed
