@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -20,6 +21,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     public MainFrame() {
         initComponents();
+        files = new MyLinkedList();
     }
 
     @SuppressWarnings("unchecked")
@@ -175,9 +177,21 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void selectFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileButtonActionPerformed
         File file = filePicker();
-        DocumentCleaner documentCleaner = new DocumentCleaner(file, ignoredWords);
-        System.out.println(documentCleaner.getName());;
-        documentCleaner.getContentWordsList().display();
+        if (file == null) {
+            return;
+        }
+        if (files.contains(file)) {
+            JOptionPane.showMessageDialog(null, "You already selected this file please select another file",
+                    "Same File Selected", JOptionPane.WARNING_MESSAGE);
+        } else if (ignoredWords == null) {
+            JOptionPane.showMessageDialog(null, "Please select the file containing ignored words first.",
+                    "Ignored Words Weren't Select", JOptionPane.WARNING_MESSAGE);
+        } else {
+            DocumentCleaner documentCleaner = new DocumentCleaner(file, ignoredWords);
+            files.addLast(file);
+            System.out.println(documentCleaner.getName());;
+            documentCleaner.getContentWordsList().display();
+        }
     }//GEN-LAST:event_selectFileButtonActionPerformed
 
     private void selectIgnoredButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectIgnoredButtonActionPerformed

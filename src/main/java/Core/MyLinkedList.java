@@ -53,7 +53,7 @@ public class MyLinkedList<T> {
         size++;
     }
 
-    public boolean contains(String data) {
+    public boolean contains(T data) {
         MyLinkedListNode<T> current = head;
         while (current != null) {
             if (current.data.equals(data)) {

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -23,28 +22,23 @@ public class DocumentCleaner {
     }
 
     protected void setDocumentFields(MyLinkedList ignoredWords) {
-        if (file != null && ignoredWords != null) {
-            content = readHTMLFileWithoutTags();
-            content = cleanUpIgnoredWords(ignoredWords);
-            content = cleanUpSpaces();
-            fileName = file.getName();
+        content = readHTMLFileWithoutTags();
+        content = cleanUpIgnoredWords(ignoredWords);
+        content = cleanUpSpaces();
+        fileName = file.getName();
 
-            contentWordsList = new MyLinkedList();
-            StringBuilder word = new StringBuilder();
-            for (int i = 0; i < content.length(); i++) {
-                char c = content.charAt(i);
-                if (c == ' ') {
-                    getContentWordsList().addLast(word.toString());
-                    word = new StringBuilder();
-                } else {
-                    word.append(c);
-                }
+        contentWordsList = new MyLinkedList();
+        StringBuilder word = new StringBuilder();
+        for (int i = 0; i < content.length(); i++) {
+            char c = content.charAt(i);
+            if (c == ' ') {
+                getContentWordsList().addLast(word.toString());
+                word = new StringBuilder();
+            } else {
+                word.append(c);
             }
-            contentWordsList.addLast(word.toString()); // Add last word of content
-        } else {
-            JOptionPane.showMessageDialog(null, "Please select the file containing ignored words first.",
-                    "Ignored Words Weren't Select", JOptionPane.WARNING_MESSAGE);
         }
+        contentWordsList.addLast(word.toString()); // Add last word of content
     }
 
     protected String readHTMLFileWithoutTags() {
