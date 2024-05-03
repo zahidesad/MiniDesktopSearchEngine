@@ -4,10 +4,10 @@ package Core;
  *
  * @author zahid
  */
-public class BSTNode<T> {
+public class BSTNode<T extends Comparable<T>> {
 
     T data;
-    BSTNode left, right;
+    BSTNode<T> left, right;
 
     public BSTNode(T data) {
         this.data = data;

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -18,10 +19,14 @@ public class MainFrame extends javax.swing.JFrame {
     MyLinkedList< File> files;
     MyLinkedList<String> ignoredWords;
     JFileChooser fileChooser;
+    BinarySearchTree<BSTData> bst;
+    ImageIcon imageSearch = new ImageIcon("search.png");
 
     public MainFrame() {
         initComponents();
         files = new MyLinkedList();
+        bst = new BinarySearchTree<>();
+        searchButton.setIcon(imageSearch);
     }
 
     @SuppressWarnings("unchecked")
@@ -41,6 +46,14 @@ public class MainFrame extends javax.swing.JFrame {
         PreOrderPanel = new javax.swing.JPanel();
         PreOrderScrollPane = new CustomSwingComponents.ScrollPaneWin11();
         PreOrderTextArea = new javax.swing.JTextArea();
+        SearchPanel = new javax.swing.JPanel();
+        searchScrollPane = new CustomSwingComponents.ScrollPaneWin11();
+        searchWordTextArea = new javax.swing.JTextArea();
+        searchButton = new CustomSwingComponents.CustomJButton();
+        searchTextField = new javax.swing.JTextField();
+        AddedFilesScrollPane = new CustomSwingComponents.ScrollPaneWin11();
+        addedFilesTextArea = new javax.swing.JTextArea();
+        addedFilesLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,7 +72,7 @@ public class MainFrame extends javax.swing.JFrame {
                 selectFileButtonActionPerformed(evt);
             }
         });
-        MainPanel.add(selectFileButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 170, 150, 30));
+        MainPanel.add(selectFileButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 430, 150, 30));
 
         selectIgnoredButton.setForeground(new java.awt.Color(0, 0, 0));
         selectIgnoredButton.setText("Select Ignored Words File");
@@ -73,7 +86,7 @@ public class MainFrame extends javax.swing.JFrame {
                 selectIgnoredButtonActionPerformed(evt);
             }
         });
-        MainPanel.add(selectIgnoredButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 240, 220, 30));
+        MainPanel.add(selectIgnoredButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 430, 220, 30));
 
         tabbedPane.setBackground(new java.awt.Color(51, 51, 51));
         tabbedPane.setForeground(new java.awt.Color(0, 0, 0));
@@ -88,10 +101,10 @@ public class MainFrame extends javax.swing.JFrame {
         InOrderTextArea.setColumns(20);
         InOrderTextArea.setForeground(new java.awt.Color(0, 0, 0));
         InOrderTextArea.setRows(5);
-        InOrderTextArea.setText("<DOC>\n<DOCNO>\n1\n</DOCNO>\n<TITLE>\nexperimental investigation of the aerodynamics of a\nwing in a slipstream .\n</TITLE>\n<AUTHOR>\nbrenckman ,\n</AUTHOR>\n<BIBLIO>\nae . scs .\n</BIBLIO>\n<TEXT>\n  an experimental study of a wing in a propeller slipstream was\nmade in order to determine the spanwise distribution of the lift\nincrease due to slipstream at different angles of attack of the wing\nand at different free stream to slipstream velocity ratios .  the\nresults were intended in part as an evaluation basis for different\ntheoretical treatments of this problem .\n  the comparative span loading curves , together with supporting\nevidence , showed that a substantial part of the lift increment\nproduced by the slipstream was due to a destalling or boundary layer control\neffect .  the integrated remaining lift increment ,\nafter subtracting this destalling lift , was found to agree\nwell with a potential flow theory .\n  an empirical evaluation of the destalling effects was made for\nthe specific configuration of the experiment .\n</TEXT>\n</DOC>\n");
+        InOrderTextArea.setText("experimental , a.html -> 1 , b.html->2  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1");
         InOrderScrollPane.setViewportView(InOrderTextArea);
 
-        InOrderPanel.add(InOrderScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 40, 500, 270));
+        InOrderPanel.add(InOrderScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 620, 310));
 
         tabbedPane.addTab("In Order", InOrderPanel);
 
@@ -105,7 +118,7 @@ public class MainFrame extends javax.swing.JFrame {
         PostOrderTextArea.setRows(5);
         PostOrderScrollPane.setViewportView(PostOrderTextArea);
 
-        PostOrderPanel.add(PostOrderScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 40, 500, 270));
+        PostOrderPanel.add(PostOrderScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 620, 310));
 
         tabbedPane.addTab("Post Order", PostOrderPanel);
 
@@ -119,23 +132,66 @@ public class MainFrame extends javax.swing.JFrame {
         PreOrderTextArea.setRows(5);
         PreOrderScrollPane.setViewportView(PreOrderTextArea);
 
-        PreOrderPanel.add(PreOrderScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 40, 500, 270));
+        PreOrderPanel.add(PreOrderScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 620, 310));
 
         tabbedPane.addTab("Pre Order", PreOrderPanel);
 
-        MainPanel.add(tabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 100, 650, 380));
+        SearchPanel.setBackground(new java.awt.Color(102, 102, 102));
+        SearchPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        searchWordTextArea.setEditable(false);
+        searchWordTextArea.setBackground(new java.awt.Color(204, 204, 204));
+        searchWordTextArea.setColumns(20);
+        searchWordTextArea.setForeground(new java.awt.Color(0, 0, 0));
+        searchWordTextArea.setRows(5);
+        searchScrollPane.setViewportView(searchWordTextArea);
+
+        SearchPanel.add(searchScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 380, 210));
+
+        searchButton.setBackground(new java.awt.Color(102, 102, 102));
+        searchButton.setBorder(null);
+        searchButton.setForeground(new java.awt.Color(102, 102, 102));
+        searchButton.setBorderColor(new java.awt.Color(102, 102, 102));
+        searchButton.setColor(new java.awt.Color(102, 102, 102));
+        searchButton.setColorClick(new java.awt.Color(102, 102, 102));
+        searchButton.setColorOver(new java.awt.Color(187, 187, 187));
+        searchButton.setRadius(70);
+        SearchPanel.add(searchButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 40, 40, 40));
+
+        searchTextField.setBackground(new java.awt.Color(204, 204, 204));
+        searchTextField.setForeground(new java.awt.Color(0, 0, 0));
+        SearchPanel.add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 45, 130, 30));
+
+        tabbedPane.addTab("Search Word", SearchPanel);
+
+        MainPanel.add(tabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 670, 380));
+
+        addedFilesTextArea.setEditable(false);
+        addedFilesTextArea.setBackground(new java.awt.Color(204, 204, 204));
+        addedFilesTextArea.setColumns(10);
+        addedFilesTextArea.setForeground(new java.awt.Color(0, 0, 0));
+        addedFilesTextArea.setRows(5);
+        AddedFilesScrollPane.setViewportView(addedFilesTextArea);
+
+        MainPanel.add(AddedFilesScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 78, 190, 320));
+
+        addedFilesLabel.setBackground(new java.awt.Color(204, 204, 204));
+        addedFilesLabel.setForeground(new java.awt.Color(204, 204, 204));
+        addedFilesLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        addedFilesLabel.setText("ADDED FILES");
+        MainPanel.add(addedFilesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 50, 190, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(MainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1249, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(MainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 944, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(MainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 634, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(MainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 553, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -174,6 +230,26 @@ public class MainFrame extends javax.swing.JFrame {
         return ignoredWords;
     }
 
+    private void addFileToBST(DocumentCleaner documentCleaner) {
+        System.out.println("File Name: " + documentCleaner.getName());
+        for (int i = 0; i < documentCleaner.getContentWordsList().getSize(); i++) {
+            bst.add(new BSTData((String) documentCleaner.getContentWordsList().get(i), documentCleaner.getName()));
+        }
+        bst.inOrder(bst.root, InOrderTextArea);
+        bst.postOrder(bst.root, PostOrderTextArea);
+        bst.preOrder(bst.root, PreOrderTextArea);
+
+        if (bst.root == null) {
+            System.out.println("Root null");
+        }
+    }
+
+    private void cleanJTextAreas() {
+        InOrderTextArea.setText("");
+        PostOrderTextArea.setText("");
+        PreOrderTextArea.setText("");
+    }
+
 
     private void selectFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileButtonActionPerformed
         File file = filePicker();
@@ -187,10 +263,11 @@ public class MainFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please select the file containing ignored words first.",
                     "Ignored Words Weren't Select", JOptionPane.WARNING_MESSAGE);
         } else {
-            DocumentCleaner documentCleaner = new DocumentCleaner(file, ignoredWords);
             files.addLast(file);
-            System.out.println(documentCleaner.getName());;
-            documentCleaner.getContentWordsList().display();
+            addedFilesTextArea.append(file.getName() + "\n");
+            DocumentCleaner documentCleaner = new DocumentCleaner(file, ignoredWords);
+            cleanJTextAreas();
+            addFileToBST(documentCleaner);
         }
     }//GEN-LAST:event_selectFileButtonActionPerformed
 
@@ -233,6 +310,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private CustomSwingComponents.ScrollPaneWin11 AddedFilesScrollPane;
     private javax.swing.JPanel InOrderPanel;
     private CustomSwingComponents.ScrollPaneWin11 InOrderScrollPane;
     private javax.swing.JTextArea InOrderTextArea;
@@ -243,6 +321,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel PreOrderPanel;
     private CustomSwingComponents.ScrollPaneWin11 PreOrderScrollPane;
     private javax.swing.JTextArea PreOrderTextArea;
+    private javax.swing.JPanel SearchPanel;
+    private javax.swing.JLabel addedFilesLabel;
+    private javax.swing.JTextArea addedFilesTextArea;
+    private CustomSwingComponents.CustomJButton searchButton;
+    private CustomSwingComponents.ScrollPaneWin11 searchScrollPane;
+    private javax.swing.JTextField searchTextField;
+    private javax.swing.JTextArea searchWordTextArea;
     private CustomSwingComponents.CustomJButton selectFileButton;
     private CustomSwingComponents.CustomJButton selectIgnoredButton;
     private CustomSwingComponents.TabbedPaneCustom tabbedPane;
