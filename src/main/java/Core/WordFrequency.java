@@ -29,4 +29,9 @@ public class WordFrequency {
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
+
+    @Override
+    public String toString() {
+        return documentName + "," + frequency;
+    }
 }

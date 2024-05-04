@@ -16,16 +16,17 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    MyLinkedList< File> files;
-    MyLinkedList<String> ignoredWords;
-    JFileChooser fileChooser;
-    BinarySearchTree<BSTData> bst;
-    ImageIcon imageSearch = new ImageIcon("search.png");
+    public static File file;
+    private MyLinkedList< File> files;
+    private MyLinkedList<String> ignoredWords;
+    private JFileChooser fileChooser;
+    private BinarySearchTree bst;
+    private ImageIcon imageSearch = new ImageIcon("search.png");
 
     public MainFrame() {
         initComponents();
         files = new MyLinkedList();
-        bst = new BinarySearchTree<>();
+        bst = new BinarySearchTree();
         searchButton.setIcon(imageSearch);
     }
 
@@ -101,7 +102,6 @@ public class MainFrame extends javax.swing.JFrame {
         InOrderTextArea.setColumns(20);
         InOrderTextArea.setForeground(new java.awt.Color(0, 0, 0));
         InOrderTextArea.setRows(5);
-        InOrderTextArea.setText("experimental , a.html -> 1 , b.html->2  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1  , a.html -> 1");
         InOrderScrollPane.setViewportView(InOrderTextArea);
 
         InOrderPanel.add(InOrderScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 620, 310));
@@ -156,6 +156,11 @@ public class MainFrame extends javax.swing.JFrame {
         searchButton.setColorClick(new java.awt.Color(102, 102, 102));
         searchButton.setColorOver(new java.awt.Color(187, 187, 187));
         searchButton.setRadius(70);
+        searchButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchButtonActionPerformed(evt);
+            }
+        });
         SearchPanel.add(searchButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 40, 40, 40));
 
         searchTextField.setBackground(new java.awt.Color(204, 204, 204));
@@ -209,7 +214,6 @@ public class MainFrame extends javax.swing.JFrame {
         int action = fileChooser.showOpenDialog(null);
         if (action == JFileChooser.APPROVE_OPTION) {
             File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-            System.out.println("Selected File : " + file);
             return file;
         }
         return null;
@@ -230,20 +234,6 @@ public class MainFrame extends javax.swing.JFrame {
         return ignoredWords;
     }
 
-    private void addFileToBST(DocumentCleaner documentCleaner) {
-        System.out.println("File Name: " + documentCleaner.getName());
-        for (int i = 0; i < documentCleaner.getContentWordsList().getSize(); i++) {
-            bst.add(new BSTData((String) documentCleaner.getContentWordsList().get(i), documentCleaner.getName()));
-        }
-        bst.inOrder(bst.root, InOrderTextArea);
-        bst.postOrder(bst.root, PostOrderTextArea);
-        bst.preOrder(bst.root, PreOrderTextArea);
-
-        if (bst.root == null) {
-            System.out.println("Root null");
-        }
-    }
-
     private void cleanJTextAreas() {
         InOrderTextArea.setText("");
         PostOrderTextArea.setText("");
@@ -252,7 +242,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 
     private void selectFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileButtonActionPerformed
-        File file = filePicker();
+        file = filePicker();
         if (file == null) {
             return;
         }
@@ -267,7 +257,10 @@ public class MainFrame extends javax.swing.JFrame {
             addedFilesTextArea.append(file.getName() + "\n");
             DocumentCleaner documentCleaner = new DocumentCleaner(file, ignoredWords);
             cleanJTextAreas();
-            addFileToBST(documentCleaner);
+            documentCleaner.addFileToBST(bst);
+            bst.inOrder(bst.root, InOrderTextArea);
+            bst.postOrder(bst.root, PostOrderTextArea);
+            bst.preOrder(bst.root, PreOrderTextArea);
         }
     }//GEN-LAST:event_selectFileButtonActionPerformed
 
@@ -275,9 +268,12 @@ public class MainFrame extends javax.swing.JFrame {
         File filePath = filePicker();
         if (filePath != null) {
             ignoredWords = readIgnoredWords(filePath);
-            ignoredWords.display();
         }
     }//GEN-LAST:event_selectIgnoredButtonActionPerformed
+
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+
+    }//GEN-LAST:event_searchButtonActionPerformed
 
     /**
      * @param args the command line arguments

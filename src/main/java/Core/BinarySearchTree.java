@@ -6,35 +6,35 @@ import javax.swing.JTextArea;
  *
  * @author zahid
  */
-public class BinarySearchTree<T extends Comparable<T>> {
+public class BinarySearchTree {
 
-    BSTNode<T> root;
+    BSTNode<BSTData> root;
 
-    public void add(T newData) {
+    public void add(BSTData newData) {
         root = addRecursive(root, newData);
     }
 
-    private BSTNode<T> addRecursive(BSTNode<T> current, T newData) {
+    private BSTNode<BSTData> addRecursive(BSTNode<BSTData> current, BSTData newData) {
         if (current == null) {
             return new BSTNode<>(newData);
         }
         int comparison = newData.compareTo(current.data);
 
         if (comparison < 0) {
-            current.left = addRecursive(current.left, newData);            
+            current.left = addRecursive(current.left, newData);
         } else if (comparison > 0) {
             current.right = addRecursive(current.right, newData);
         } else {
-            
+            current.data.update();
         }
         return current;
     }
 
-    public boolean search(T word) {
+    public boolean search(BSTData word) {
         return searchRecursive(root, word);
     }
 
-    private boolean searchRecursive(BSTNode<T> current, T word) {
+    private boolean searchRecursive(BSTNode<BSTData> current, BSTData word) {
         if (current == null) {
             return false;
         }
@@ -50,7 +50,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         }
     }
 
-    public void inOrder(BSTNode<T> node, JTextArea jTextArea) {
+    public void inOrder(BSTNode<BSTData> node, JTextArea jTextArea) {
         if (node != null) {
             inOrder(node.left, jTextArea);
             jTextArea.append(node.data.toString() + "\n");
@@ -58,7 +58,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         }
     }
 
-    public void postOrder(BSTNode<T> node, JTextArea jTextArea) {
+    public void postOrder(BSTNode<BSTData> node, JTextArea jTextArea) {
         if (node != null) {
             postOrder(node.left, jTextArea);
             postOrder(node.right, jTextArea);
@@ -66,7 +66,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         }
     }
 
-    public void preOrder(BSTNode<T> node, JTextArea jTextArea) {
+    public void preOrder(BSTNode<BSTData> node, JTextArea jTextArea) {
         if (node != null) {
             jTextArea.append(node.data.toString() + "\n");
             preOrder(node.left, jTextArea);

@@ -11,8 +11,7 @@ import java.io.IOException;
  */
 public class DocumentCleaner {
 
-    private File file;
-    private String fileName;
+     File file;
     private String content;
     private MyLinkedList contentWordsList;
 
@@ -25,7 +24,6 @@ public class DocumentCleaner {
         content = readHTMLFileWithoutTags();
         content = cleanUpIgnoredWords(ignoredWords);
         content = cleanUpSpaces();
-        fileName = file.getName();
 
         contentWordsList = new MyLinkedList();
         StringBuilder word = new StringBuilder();
@@ -77,16 +75,14 @@ public class DocumentCleaner {
         return content;
     }
 
+    public void addFileToBST(BinarySearchTree bst) {
+        for (int i = 0; i < getContentWordsList().getSize(); i++) {
+            bst.add(new BSTData((String) getContentWordsList().get(i)));
+        }
+    }
+
     protected String cleanUpSpaces() {
         return content.replaceAll("\\s+", " ").trim();
-    }
-
-    public String getName() {
-        return fileName;
-    }
-
-    public void setName(String name) {
-        this.fileName = name;
     }
 
     public String getContent() {
