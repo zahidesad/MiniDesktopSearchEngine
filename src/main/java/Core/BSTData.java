@@ -9,24 +9,25 @@ public class BSTData implements Comparable<BSTData> {
     private String word;
     private MyLinkedList<WordFrequency> wordCounts;
 
-    public BSTData(String word) {
+    public BSTData(String word, String fileName) {
         this.word = word;
         this.wordCounts = new MyLinkedList<>();
-        wordCounts.addLast(new WordFrequency(MainFrame.file.getName(), 1));
+        wordCounts.addLast(new WordFrequency(fileName, 1));
     }
 
     public void update() {
-        boolean found = false;
+        boolean flag = false;
+        String fileName = MainFrame.selectedFile.getName();
         for (int i = 0; i < wordCounts.getSize(); i++) {
             WordFrequency freq = wordCounts.get(i);
-            if (freq.getDocumentName().equals(MainFrame.file.getName())) {
+            if (freq.getDocumentName().equals(fileName)) {
                 freq.setFrequency(freq.getFrequency() + 1);
-                found = true;
+                flag = true;
                 break;
             }
         }
-        if (!found) {
-            wordCounts.addLast(new WordFrequency(MainFrame.file.getName(), 1));
+        if (!flag) {
+            wordCounts.addLast(new WordFrequency(fileName, 1));
         }
     }
 
@@ -49,11 +50,12 @@ public class BSTData implements Comparable<BSTData> {
 
     @Override
     public String toString() {
-        String output = word + " => ";
+        StringBuilder output = new StringBuilder();
+        output.append(word).append(" => ");
         for (int i = 0; i < wordCounts.getSize(); i++) {
-            output += wordCounts.get(i).toString() + "-> ";
+            output.append(wordCounts.get(i)).append(" -> ");
         }
-        return output;
+        return output.toString();
     }
 
 }

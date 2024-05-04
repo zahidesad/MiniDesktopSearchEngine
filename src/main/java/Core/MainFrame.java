@@ -16,8 +16,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    public static File file;
-    private MyLinkedList< File> files;
+    public static File selectedFile;
+    private MyLinkedList< File> selectedFiles;
     private MyLinkedList<String> ignoredWords;
     private JFileChooser fileChooser;
     private BinarySearchTree bst;
@@ -25,7 +25,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     public MainFrame() {
         initComponents();
-        files = new MyLinkedList();
+        selectedFiles = new MyLinkedList();
         bst = new BinarySearchTree();
         searchButton.setIcon(imageSearch);
     }
@@ -202,7 +202,7 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    protected File filePicker() {
+    private File pickFile() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             UIManager.put("FileChooserUI", "com.sun.java.swing.plaf.windows.WindowsFileChooserUI");
@@ -213,66 +213,76 @@ public class MainFrame extends javax.swing.JFrame {
         fileChooser = new JFileChooser();
         int action = fileChooser.showOpenDialog(null);
         if (action == JFileChooser.APPROVE_OPTION) {
-            File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-            return file;
+            return new File(fileChooser.getSelectedFile().getAbsolutePath());
         }
         return null;
     }
 
-    protected MyLinkedList readIgnoredWords(File filePath) {
-        ignoredWords = new MyLinkedList<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
+    private MyLinkedList<String> readIgnoredWords(File filePath) {
+        MyLinkedList<String> words = new MyLinkedList<>();
+        try ( BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                ignoredWords.addLast(line.trim());
+                words.addLast(line.trim());
             }
-            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ignoredWords;
+        return words;
     }
 
-    private void cleanJTextAreas() {
-        InOrderTextArea.setText("");
-        PostOrderTextArea.setText("");
-        PreOrderTextArea.setText("");
-    }
-
-
-    private void selectFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileButtonActionPerformed
-        file = filePicker();
-        if (file == null) {
+    private void handleFileSelection() {
+        selectedFile = pickFile();
+        if (selectedFile == null) {
             return;
         }
-        if (files.contains(file)) {
+        if (selectedFiles.contains(selectedFile)) {
             JOptionPane.showMessageDialog(null, "You already selected this file please select another file",
                     "Same File Selected", JOptionPane.WARNING_MESSAGE);
         } else if (ignoredWords == null) {
             JOptionPane.showMessageDialog(null, "Please select the file containing ignored words first.",
                     "Ignored Words Weren't Select", JOptionPane.WARNING_MESSAGE);
         } else {
-            files.addLast(file);
-            addedFilesTextArea.append(file.getName() + "\n");
-            DocumentCleaner documentCleaner = new DocumentCleaner(file, ignoredWords);
-            cleanJTextAreas();
-            documentCleaner.addFileToBST(bst);
+            selectedFiles.addLast(selectedFile);
+            addedFilesTextArea.append(selectedFile.getName() + "\n");
+            DocumentCleaner documentCleaner = new DocumentCleaner();
+            documentCleaner.cleanDocument(selectedFile, ignoredWords);
+            clearTextAreas();
+            documentCleaner.addFileToBST(bst, selectedFile);
             bst.inOrder(bst.root, InOrderTextArea);
             bst.postOrder(bst.root, PostOrderTextArea);
             bst.preOrder(bst.root, PreOrderTextArea);
+            setCaretPositions();
         }
+    }
+
+    private void clearTextAreas() {
+        InOrderTextArea.setText("");
+        PostOrderTextArea.setText("");
+        PreOrderTextArea.setText("");
+    }
+
+    private void setCaretPositions() {
+        InOrderTextArea.setCaretPosition(0);
+        PostOrderTextArea.setCaretPosition(0);
+        PreOrderTextArea.setCaretPosition(0);
+    }
+
+
+    private void selectFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectFileButtonActionPerformed
+        handleFileSelection();
     }//GEN-LAST:event_selectFileButtonActionPerformed
 
     private void selectIgnoredButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectIgnoredButtonActionPerformed
-        File filePath = filePicker();
+        File filePath = pickFile();
         if (filePath != null) {
             ignoredWords = readIgnoredWords(filePath);
         }
     }//GEN-LAST:event_selectIgnoredButtonActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-
+        searchWordTextArea.setText("");
+        bst.search(searchTextField.getText(), searchWordTextArea);
     }//GEN-LAST:event_searchButtonActionPerformed
 
     /**

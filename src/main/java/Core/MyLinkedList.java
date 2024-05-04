@@ -17,6 +17,7 @@ public class MyLinkedList<T> {
         MyLinkedListNode<T> newNode = new MyLinkedListNode<>(data);
         if (head == null) {
             head = newNode;
+            size++;
             return;
         }
         MyLinkedListNode<T> current = head;
@@ -74,15 +75,6 @@ public class MyLinkedList<T> {
             current = current.next;
         }
         return current.data;
-    }
-
-    public void display() {
-        MyLinkedListNode<T> current = head;
-        while (current != null) {
-            System.out.println(current.data);
-            current = current.next;
-        }
-        System.out.println();
     }
 
     public int getSize() {

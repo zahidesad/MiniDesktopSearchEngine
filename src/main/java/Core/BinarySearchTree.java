@@ -30,24 +30,31 @@ public class BinarySearchTree {
         return current;
     }
 
-    public boolean search(BSTData word) {
-        return searchRecursive(root, word);
+    public void search(String word, JTextArea jTextArea) {
+        BSTData searchData = new BSTData(word, "");
+        searchRecursive(root, searchData, jTextArea);
     }
 
-    private boolean searchRecursive(BSTNode<BSTData> current, BSTData word) {
+    private void searchRecursive(BSTNode<BSTData> current, BSTData searchData, JTextArea jTextArea) {
         if (current == null) {
-            return false;
+            jTextArea.append("Word not found");
+            return;
         }
 
-        int comparison = word.compareTo(current.data);
+        int comparison = searchData.getWord().compareTo(current.data.getWord());
 
         if (comparison == 0) {
-            return true;
+            MyLinkedList<WordFrequency> wordCounts = current.data.getWordCounts();
+            for (int i = 0; i < wordCounts.getSize(); i++) {
+                WordFrequency freq = wordCounts.get(i);
+                jTextArea.append("File: " + freq.getDocumentName() + ", Frequency: " + freq.getFrequency() + "\n");
+            }
         } else if (comparison < 0) {
-            return searchRecursive(current.left, word);
+            searchRecursive(current.left, searchData, jTextArea);
         } else {
-            return searchRecursive(current.right, word);
+            searchRecursive(current.right, searchData, jTextArea);
         }
+
     }
 
     public void inOrder(BSTNode<BSTData> node, JTextArea jTextArea) {
