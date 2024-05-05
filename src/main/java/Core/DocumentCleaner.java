@@ -12,11 +12,24 @@ import java.io.IOException;
 public class DocumentCleaner {
 
     private String content;
+    private MyLinkedList<String> ignoredWords = new MyLinkedList<>();
 
-    public void cleanDocument(File file, MyLinkedList<String> ignoredWords) {
+    public void cleanDocument(File file) {
         readHTMLFileWithoutTags(file);
-        cleanUpIgnoredWords(ignoredWords);
+        cleanUpIgnoredWords();
         cleanUpSpaces();
+    }
+
+    public MyLinkedList<String> readIgnoredWords(File filePath) {
+        try ( BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                getIgnoredWords().addLast(line.trim());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return getIgnoredWords();
     }
 
     private void readHTMLFileWithoutTags(File file) {
@@ -45,9 +58,9 @@ public class DocumentCleaner {
         content = contentBuilder.toString();
     }
 
-    private void cleanUpIgnoredWords(MyLinkedList<String> ignoredWords) {
-        for (int i = 0; i < ignoredWords.getSize(); i++) {
-            content = content.replaceAll("\\b" + ignoredWords.get(i) + "\\b", "");
+    private void cleanUpIgnoredWords() {
+        for (String ignoredWord : getIgnoredWords()) {
+            content = content.replaceAll("\\b" + ignoredWord + "\\b", "");
         }
     }
 
@@ -65,5 +78,9 @@ public class DocumentCleaner {
 
     public String getContent() {
         return content;
+    }
+
+    public MyLinkedList<String> getIgnoredWords() {
+        return ignoredWords;
     }
 }

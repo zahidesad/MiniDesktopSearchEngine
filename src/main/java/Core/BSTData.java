@@ -16,12 +16,11 @@ public class BSTData implements Comparable<BSTData> {
     }
 
     public void update() {
-        boolean flag = false;
         String fileName = MainFrame.selectedFile.getName();
-        for (int i = 0; i < wordCounts.getSize(); i++) {
-            WordFrequency freq = wordCounts.get(i);
+        boolean flag = false;
+        for (WordFrequency freq : wordCounts) {
             if (freq.getDocumentName().equals(fileName)) {
-                freq.setFrequency(freq.getFrequency() + 1);
+                freq.incrementFrequency();
                 flag = true;
                 break;
             }
@@ -33,10 +32,6 @@ public class BSTData implements Comparable<BSTData> {
 
     public String getWord() {
         return word;
-    }
-
-    public void setWord(String word) {
-        this.word = word;
     }
 
     public MyLinkedList<WordFrequency> getWordCounts() {
@@ -52,8 +47,8 @@ public class BSTData implements Comparable<BSTData> {
     public String toString() {
         StringBuilder output = new StringBuilder();
         output.append(word).append(" => ");
-        for (int i = 0; i < wordCounts.getSize(); i++) {
-            output.append(wordCounts.get(i)).append(" -> ");
+        for (WordFrequency freq : wordCounts) {
+            output.append(freq).append(" -> ");
         }
         return output.toString();
     }

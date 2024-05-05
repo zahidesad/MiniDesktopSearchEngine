@@ -1,9 +1,6 @@
 package Core;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -17,16 +14,16 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class MainFrame extends javax.swing.JFrame {
 
     public static File selectedFile;
-    private MyLinkedList< File> selectedFiles;
-    private MyLinkedList<String> ignoredWords;
-    private JFileChooser fileChooser;
-    private BinarySearchTree bst;
-    private ImageIcon imageSearch = new ImageIcon("search.png");
+    private final MyLinkedList<File> selectedFiles;
+    private final DocumentCleaner documentCleaner;
+    private final BinarySearchTree bst;
+    private final ImageIcon imageSearch = new ImageIcon("search.png");
 
     public MainFrame() {
         initComponents();
         selectedFiles = new MyLinkedList();
         bst = new BinarySearchTree();
+        documentCleaner = new DocumentCleaner();
         searchButton.setIcon(imageSearch);
     }
 
@@ -209,26 +206,12 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             ex.printStackTrace();
         }
-
-        fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser();
         int action = fileChooser.showOpenDialog(null);
         if (action == JFileChooser.APPROVE_OPTION) {
             return new File(fileChooser.getSelectedFile().getAbsolutePath());
         }
         return null;
-    }
-
-    private MyLinkedList<String> readIgnoredWords(File filePath) {
-        MyLinkedList<String> words = new MyLinkedList<>();
-        try ( BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                words.addLast(line.trim());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return words;
     }
 
     private void handleFileSelection() {
@@ -239,21 +222,25 @@ public class MainFrame extends javax.swing.JFrame {
         if (selectedFiles.contains(selectedFile)) {
             JOptionPane.showMessageDialog(null, "You already selected this file please select another file",
                     "Same File Selected", JOptionPane.WARNING_MESSAGE);
-        } else if (ignoredWords == null) {
+        } else if (documentCleaner.getIgnoredWords() == null) {
             JOptionPane.showMessageDialog(null, "Please select the file containing ignored words first.",
                     "Ignored Words Weren't Select", JOptionPane.WARNING_MESSAGE);
         } else {
             selectedFiles.addLast(selectedFile);
             addedFilesTextArea.append(selectedFile.getName() + "\n");
-            DocumentCleaner documentCleaner = new DocumentCleaner();
-            documentCleaner.cleanDocument(selectedFile, ignoredWords);
+
+            documentCleaner.cleanDocument(selectedFile);
             clearTextAreas();
             documentCleaner.addFileToBST(bst, selectedFile);
-            bst.inOrder(bst.root, InOrderTextArea);
-            bst.postOrder(bst.root, PostOrderTextArea);
-            bst.preOrder(bst.root, PreOrderTextArea);
-            setCaretPositions();
+            updateTreeTextAreas();
         }
+    }
+
+    private void updateTreeTextAreas() {
+        bst.inOrder(bst.root, InOrderTextArea);
+        bst.postOrder(bst.root, PostOrderTextArea);
+        bst.preOrder(bst.root, PreOrderTextArea);
+        setCaretPositions();
     }
 
     private void clearTextAreas() {
@@ -276,7 +263,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void selectIgnoredButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectIgnoredButtonActionPerformed
         File filePath = pickFile();
         if (filePath != null) {
-            ignoredWords = readIgnoredWords(filePath);
+            documentCleaner.readIgnoredWords(filePath);
         }
     }//GEN-LAST:event_selectIgnoredButtonActionPerformed
 
@@ -285,9 +272,6 @@ public class MainFrame extends javax.swing.JFrame {
         bst.search(searchTextField.getText(), searchWordTextArea);
     }//GEN-LAST:event_searchButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

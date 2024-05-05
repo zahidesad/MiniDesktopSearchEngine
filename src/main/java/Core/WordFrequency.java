@@ -14,20 +14,16 @@ public class WordFrequency {
         this.frequency = frequency;
     }
 
+    public void incrementFrequency() {
+        frequency += 1;
+    }
+
     public String getDocumentName() {
         return documentName;
     }
 
-    public void setDocumentName(String documentName) {
-        this.documentName = documentName;
-    }
-
     public int getFrequency() {
         return frequency;
-    }
-
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
     }
 
     @Override

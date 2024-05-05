@@ -1,17 +1,15 @@
 package Core;
 
+import java.util.Iterator;
+
 /**
  *
  * @author zahid
  */
-public class MyLinkedList<T> {
+public class MyLinkedList<T> implements Iterable<T> {
 
     protected MyLinkedListNode<T> head;
     private int size;
-
-    public MyLinkedList() {
-        this.head = null;
-    }
 
     public void addLast(T data) {
         MyLinkedListNode<T> newNode = new MyLinkedListNode<>(data);
@@ -24,32 +22,6 @@ public class MyLinkedList<T> {
         while (current.next != null) {
             current = current.next;
         }
-        current.next = newNode;
-        size++;
-    }
-
-    public void addFirst(T data) {
-        MyLinkedListNode<T> newNode = new MyLinkedListNode<>(data);
-        if (head == null) {
-            head = newNode;
-            return;
-        }
-        newNode.next = head;
-        head = newNode;
-        size++;
-    }
-
-    public void addAfterData(T prevData, T newData) {
-        MyLinkedListNode<T> newNode = new MyLinkedListNode<>(newData);
-        MyLinkedListNode<T> current = head;
-        while (current != null && !current.data.equals(prevData)) {
-            current = current.next;
-        }
-        if (current == null) {
-            System.out.println("Önceki veri bulunamadı.");
-            return;
-        }
-        newNode.next = current.next;
         current.next = newNode;
         size++;
     }
@@ -79,6 +51,35 @@ public class MyLinkedList<T> {
 
     public int getSize() {
         return size;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new MyLinkedListIterator();
+    }
+
+    private class MyLinkedListIterator implements Iterator<T> {
+
+        private MyLinkedListNode<T> current;
+
+        public MyLinkedListIterator() {
+            this.current = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new RuntimeException("No more elements");
+            }
+            T data = current.data;
+            current = current.next;
+            return data;
+        }
     }
 
 }

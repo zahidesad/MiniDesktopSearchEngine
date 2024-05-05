@@ -45,8 +45,7 @@ public class BinarySearchTree {
 
         if (comparison == 0) {
             MyLinkedList<WordFrequency> wordCounts = current.data.getWordCounts();
-            for (int i = 0; i < wordCounts.getSize(); i++) {
-                WordFrequency freq = wordCounts.get(i);
+            for (WordFrequency freq : wordCounts) {
                 jTextArea.append("File: " + freq.getDocumentName() + ", Frequency: " + freq.getFrequency() + "\n");
             }
         } else if (comparison < 0) {
