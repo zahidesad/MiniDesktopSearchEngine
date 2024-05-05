@@ -56,6 +56,29 @@ public class BinarySearchTree {
 
     }
 
+    public String getSuggestion(String prefix) {
+        return getSuggestionRec(root, prefix, "");
+    }
+
+    private String getSuggestionRec(BSTNode<BSTData> root, String prefix, String suggestion) {
+        if (root == null) {
+            return suggestion.isEmpty() ? null : suggestion;
+        }
+
+        if (root.data.getWord().startsWith(prefix)) {
+            if (root.data.getWord().equals(prefix)) {
+                return null;
+            }
+            return root.data.getWord();
+        }
+
+        if (prefix.compareTo(root.data.getWord()) < 0) {
+            return getSuggestionRec(root.left, prefix, suggestion);
+        }
+
+        return getSuggestionRec(root.right, prefix, root.data.getWord());
+    }
+
     public void inOrder(BSTNode<BSTData> node, JTextArea jTextArea) {
         if (node != null) {
             inOrder(node.left, jTextArea);

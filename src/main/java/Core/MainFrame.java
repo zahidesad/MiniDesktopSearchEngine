@@ -1,5 +1,6 @@
 package Core;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -49,6 +50,7 @@ public class MainFrame extends javax.swing.JFrame {
         searchWordTextArea = new javax.swing.JTextArea();
         searchButton = new CustomSwingComponents.CustomJButton();
         searchTextField = new javax.swing.JTextField();
+        getSuggestionCheckBox = new javax.swing.JCheckBox();
         AddedFilesScrollPane = new CustomSwingComponents.ScrollPaneWin11();
         addedFilesTextArea = new javax.swing.JTextArea();
         addedFilesLabel = new javax.swing.JLabel();
@@ -162,7 +164,17 @@ public class MainFrame extends javax.swing.JFrame {
 
         searchTextField.setBackground(new java.awt.Color(204, 204, 204));
         searchTextField.setForeground(new java.awt.Color(0, 0, 0));
+        searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyReleased(evt);
+            }
+        });
         SearchPanel.add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 45, 130, 30));
+
+        getSuggestionCheckBox.setBackground(new java.awt.Color(204, 204, 204));
+        getSuggestionCheckBox.setForeground(new java.awt.Color(0, 0, 0));
+        getSuggestionCheckBox.setText("I want to get word suggestion ");
+        SearchPanel.add(getSuggestionCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 50, -1, -1));
 
         tabbedPane.addTab("Search Word", SearchPanel);
 
@@ -272,6 +284,32 @@ public class MainFrame extends javax.swing.JFrame {
         bst.search(searchTextField.getText(), searchWordTextArea);
     }//GEN-LAST:event_searchButtonActionPerformed
 
+    private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyReleased
+        if (getSuggestionCheckBox.isSelected()) {
+            if (evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                String currentText = searchTextField.getText();
+                if (!currentText.isEmpty()) {
+                    String newText = currentText.substring(0, currentText.length() - 1);
+                    String suggestion = bst.getSuggestion(newText);
+                    if (suggestion != null) {
+                        searchTextField.setText(suggestion);
+                        searchTextField.setSelectionStart(newText.length());
+                        searchTextField.setSelectionEnd(suggestion.length());
+                    }
+                }
+            } else {
+                String to_check = searchTextField.getText();
+                String suggestion = bst.getSuggestion(to_check);
+                if (suggestion != null) {
+                    searchTextField.setText(suggestion);
+                    searchTextField.setSelectionStart(to_check.length());
+                    searchTextField.setSelectionEnd(suggestion.length());
+                }
+            }
+        }
+
+    }//GEN-LAST:event_searchTextFieldKeyReleased
+
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -314,6 +352,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel SearchPanel;
     private javax.swing.JLabel addedFilesLabel;
     private javax.swing.JTextArea addedFilesTextArea;
+    private javax.swing.JCheckBox getSuggestionCheckBox;
     private CustomSwingComponents.CustomJButton searchButton;
     private CustomSwingComponents.ScrollPaneWin11 searchScrollPane;
     private javax.swing.JTextField searchTextField;
